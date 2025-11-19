@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Variable Font Demo</title>
+<style>
+/* -------------------------------------- */
+/* -------- 1. 기본 및 폰트 설정 -------- */
+/* -------------------------------------- */
+
+body {
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    font-family: 'SpringVF', sans-serif;
+    background: #f7f7f7;
+}
+
+@font-face {
+    font-family: 'SpringVF';
+    /* 🚨 폰트 경로 수정: 로컬 경로 -> 상대 경로 ('fonts' 폴더 사용) */
+    src: url('fonts/newserif_normal-VF.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'BelutVF';
+    /* 🚨 폰트 경로 수정: 로컬 경로 -> 상대 경로 ('fonts' 폴더 사용) */
+    src: url('fonts/5amBellutTTF.ttf') format('truetype');
+}
+
+/* ---------- 메인 ---------- */
+.main {
+    flex: 1;
+    display: flex;
+    height: 100vh; 
+    overflow: hidden;
+}
+
+.left-panel {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid #e6e6e6;
+    background: #fff;
+    transition: background 0.25s, color 0.25s;
+    min-height: 100%; 
+    box-sizing: border-box; 
+}
+
+/* -------------------------------------- */
+/* -------- 2. 컨트롤 바 영역 스타일 -------- */
+/* -------------------------------------- */
+
+.control-panel-wrapper {
+    flex: 0 0 auto; 
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+    margin-bottom: 20px;
+}
+
+.text-controls {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    gap: 5px; 
+    min-width: 150px; 
+}
+
+.control-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.control-label, .control-value {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    font-family: 'SpringVF'; 
+    font-feature-settings: 'normal'; 
+    font-variation-settings: 'wght' 400; 
+    transition: all 0.2s;
+}
+
+.control-value {
+    font-weight: normal;
+    color: #555;
+}
+
+/* 슬라이더 스타일 */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%; 
+    height: 6px;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+}
+#weightSlider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #333 0%, #333 var(--weight-progress, 33%), #e0e0e0 var(--weight-progress, 33%), #e0e0e0 100%);
+}
+#fontSizeSlider::-webkit-slider-runnable-track,
+#letterSpacingSlider::-webkit-slider-runnable-track,
+#lineHeightSlider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; 
+    height: 16px;
+    border-radius: 50%;
+    background: #000;
+    margin-top: -5px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #000;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* 제목/본문 버튼 영역 스타일 */
+.feature-switch-wrapper {
+    flex: 0 0 auto; 
+    margin-bottom: 20px;
+}
+.feature-switch {
+    display: flex;
+    gap: 8px;
+}
+.feature-switch button {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: none;
+    background: #f1f1f1;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all .18s;
+}
+.feature-switch button.active {
+    background: #111;
+    color: #fff;
+}
+
+/* -------------------------------------- */
+/* -------- 3. 폰트 토글 스위치 스타일 -------- */
+/* -------------------------------------- */
+
+.font-toggle-wrapper {
+    flex: 0 0 auto;
+    margin-top: 20px; 
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: center;
+    padding-left: 18px; 
+    padding-right: 18px;
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.toggle-label.active {
+    color: #000;
+}
+
+/* Base Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Checked (벨룻) 상태 */
+input:checked + .slider {
+    background-color: #000;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* -------------------------------------- */
+/* -------- 4. 텍스트 영역 및 프리뷰 스타일 -------- */
+/* -------------------------------------- */
+
+textarea {
+    flex: 1; 
+    height: auto; 
+    min-height: 100px;
+    resize: none;
+    font-size: 30px; 
+    line-height: 1.5;
+    letter-spacing: 0em;
+    font-family: 'SpringVF';
+    border: none;
+    outline: none;
+    color: #000;
+    background: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    overflow: auto; 
+}
+
+.right-panel {
+    width: 510px; 
+    flex: 0 0 510px; 
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #e6e6e6;
+    overflow: hidden;
+    height: 100%; 
+}
+
+/* 폰트 프리뷰 (큰 글립) 스타일 - 크고 중앙에 배치 */
+.glyph-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 300px; 
+    line-height: 1;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    transition: font-family 0.2s, background 0.2s, color 0.2s, border 0.2s;
+    white-space: normal; 
+    padding: 0; 
+    letter-spacing: 0; 
+}
+
+.glyph-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 80px); 
+    grid-auto-rows: 80px; 
+    overflow-y: auto;
+    padding: 10px;
+    background: #fafafa;
+    gap: 10px; 
+    justify-content: center;
+}
+
+.glyph-box {
+    width: 80px; 
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    transition: all .18s;
+    font-family: 'SpringVF';
+}
+
+/* -------------------------------------- */
+/* -------- 5. 벨룻 (반전) 스타일 -------- */
+/* -------------------------------------- */
+
+.belut-page .left-panel,
+.belut-page .right-panel {
+    background: #000;
+    color: #fff;
+}
+
+/* 벨룻 페이지 토글 스타일 조정 */
+.belut-page .toggle-label {
+    color: #555;
+}
+.belut-page .toggle-label.active {
+    color: #fff;
+}
+.belut-page .switch .slider {
+    background-color: #444;
+}
+.belut-page .switch input:checked + .slider {
+    background-color: #fff;
+}
+.belut-page .switch input:checked + .slider:before {
+    background-color: #000;
+}
+
+
+/* 나머지 벨룻 스타일 */
+.belut-page .left-panel { border-right: 1px solid #444; }
+.belut-page .right-panel { border-left: 1px solid #444; }
+.belut-page .glyph-display { border-bottom: 1px solid #444; }
+.belut-page .glyph-box { border: 1px solid #444; }
+.belut-page #weightControl { display: none; }
+.belut-page #titleBtnWrapper { display: none; }
+.belut-page .control-label,
+.belut-page .control-value { 
+    color: #fff; 
+    font-family: 'BelutVF'; 
+    font-feature-settings: normal; 
+    font-variation-settings: normal;
+    font-weight: bold; 
+}
+.belut-page #fontSizeSlider::-webkit-slider-runnable-track,
+.belut-page #letterSpacingSlider::-webkit-slider-runnable-track,
+.belut-page #lineHeightSlider::-webkit-slider-runnable-track { background: #444; }
+.belut-page input[type="range"]::-webkit-slider-thumb { background: #fff; }
+.belut-page textarea {
+    background: #0b0b0b;
+    color: #fff;
+    font-family: 'BelutVF';
+}
+.belut-page .glyph-display {
+    background: #000;
+    color: #fff;
+    font-family: 'BelutVF';
+}
+.belut-page .glyph-grid {
+    background: #0b0b0b;
+}
+.belut-page .glyph-box {
+    background: #0b0b0b;
+    color: #fff;
+    font-family: 'BelutVF';
+}
+.belut-page .glyph-box.active {
+    background: #fff;
+    color: #000;
+}
+</style>
+</head>
+<body>
+
+<div class="main">
+    <div class="left-panel">
+        
+        <div class="control-panel-wrapper">
+            
+            <div class="text-controls" id="weightControl">
+                <div class="control-info">
+                    <div class="control-label" id="weightLabel">Weight</div> 
+                </div>
+                <input type="range" id="weightSlider" min="100" max="900" value="400" />
+            </div>
+            
+            <div class="text-controls">
+                <div class="control-info">
+                    <div class="control-label" id="fontSizeLabel">Font Size</div> 
+                    <div class="control-value" id="fontSizeValue">100px</div>
+                </div>
+                <input type="range" id="fontSizeSlider" min="30" max="140" value="100" />
+            </div>
+
+            <div class="text-controls">
+                <div class="control-info">
+                    <div class="control-label" id="letterSpacingLabel">Letter Spacing</div> 
+                    <div class="control-value" id="letterSpacingValue">0</div>
+                </div>
+                <input type="range" id="letterSpacingSlider" min="-20" max="20" step="1" value="0" />
+            </div>
+
+            <div class="text-controls">
+                <div class="control-info">
+                    <div class="control-label" id="lineHeightLabel">Leading</div> 
+                    <div class="control-value" id="lineHeightValue">1.50</div>
+                </div>
+                <input type="range" id="lineHeightSlider" min="1.0" max="1.5" step="0.05" value="1.50" />
+            </div>
+
+        </div>
+        
+        <div class="feature-switch-wrapper" id="titleBtnWrapper">
+            <div class="feature-switch">
+                <button id="titleBtn" class="active">제목용</button> 
+                <button id="bodyBtn">본문용</button>
+            </div>
+        </div>
+        
+        <textarea id="typeArea">Spring Variable Font</textarea>
+
+        <div class="font-toggle-wrapper">
+            <div class="toggle-container">
+                <span class="toggle-label" id="springLabel">Spring</span>
+                <label class="switch">
+                    <input type="checkbox" id="fontToggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label" id="belutLabel">벨룻</span>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="right-panel">
+        <div class="glyph-display" id="glyphDisplay">A</div>
+        <div class="glyph-grid" id="glyphGrid"></div>
+    </div>
+</div>
+
+<script>
+const tabContents = { 
+    spring: "Spring Variable Font", 
+    belut: "벨룻 Bellut" 
+}; 
+let currentTab = 'spring';
+
+let fontStates = {
+    spring: {
+        weight: 400,
+        size: 100,
+        spacing: 0,
+        leading: 1.50,
+        feature: "normal" 
+    },
+    belut: {
+        weight: 400, 
+        size: 100,
+        spacing: 0,
+        leading: 1.50,
+        feature: "normal"
+    }
+};
+
+const main = document.querySelector('.main');
+const typeArea = document.getElementById('typeArea');
+const glyphDisplay = document.getElementById('glyphDisplay');
+const glyphGrid = document.getElementById('glyphGrid');
+
+// 컨트롤 요소
+const weightSlider = document.getElementById('weightSlider');
+const fontSizeSlider = document.getElementById('fontSizeSlider');
+const letterSpacingSlider = document.getElementById('letterSpacingSlider');
+const lineHeightSlider = document.getElementById('lineHeightSlider');
+
+const fontSizeValue = document.getElementById('fontSizeValue');
+const letterSpacingValue = document.getElementById('letterSpacingValue');
+const lineHeightValue = document.getElementById('lineHeightValue');
+
+const titleBtn = document.getElementById('titleBtn');
+const bodyBtn = document.getElementById('bodyBtn');
+
+// 라벨 요소
+const weightLabel = document.getElementById('weightLabel');
+const fontSizeLabel = document.getElementById('fontSizeLabel');
+const letterSpacingLabel = document.getElementById('letterSpacingLabel');
+const lineHeightLabel = document.getElementById('lineHeightLabel');
+
+// 토글 스위치 요소
+const fontToggle = document.getElementById('fontToggle');
+const springLabel = document.getElementById('springLabel');
+const belutLabel = document = document.getElementById('belutLabel');
+
+
+function updateSliderProgress(slider) {
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    const val = parseFloat(slider.value);
+    const progress = ((val - min) / (max - min)) * 100;
+    slider.style.setProperty('--weight-progress', `${progress}%`);
+}
+
+function syncControlValuesToDisplay(size, spacing, leading, weight = null) {
+    // 1. Textarea
+    typeArea.style.fontSize = `${size}px`; 
+    typeArea.style.lineHeight = parseFloat(leading).toFixed(2);
+    typeArea.style.letterSpacing = `${spacing / 1000}em`;
+    if (weight !== null) {
+        typeArea.style.fontVariationSettings = `'wght' ${weight}`;
+    }
+
+    // 2. Control Value Display & Sliders
+    fontSizeValue.textContent = `${size}px`;
+    letterSpacingValue.textContent = spacing;
+    lineHeightValue.textContent = parseFloat(leading).toFixed(2);
+    
+    fontSizeSlider.value = size;
+    letterSpacingSlider.value = spacing;
+    lineHeightSlider.value = leading;
+    if (weight !== null) {
+        weightSlider.value = weight;
+        updateSliderProgress(weightSlider); 
+    }
+    
+    // 3. Glyph Display: 크기는 CSS에서 고정됨. Weight만 업데이트
+    if (weight !== null) {
+        glyphDisplay.style.fontVariationSettings = `'wght' ${weight}`;
+        document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontVariationSettings=`'wght' ${weight}`);
+    }
+}
+
+function applySpringStyle(weight) { 
+    // 라벨과 값 요소 목록
+    const elements = [weightLabel, fontSizeLabel, letterSpacingLabel, lineHeightLabel, fontSizeValue, letterSpacingValue, lineHeightValue];
+    elements.forEach(el => {
+        el.style.fontFamily = 'SpringVF';
+        // 라벨 텍스트는 무조건 본문용 ('ss01' 1)으로 고정
+        el.style.fontFeatureSettings = "'ss01' 1"; 
+        el.style.fontVariationSettings = `'wght' ${weight}`; 
+        el.style.color = '#333';
+    });
+    // value는 normal weight로 변경하여 라벨과 구분
+    [fontSizeValue, letterSpacingValue, lineHeightValue].forEach(el => {
+        el.style.fontWeight = 'normal';
+    });
+}
+
+function applyBelutStyle() {
+    const elements = [fontSizeLabel, letterSpacingLabel, lineHeightLabel, fontSizeValue, letterSpacingValue, lineHeightValue];
+    elements.forEach(el => {
+        el.style.fontFamily = 'BelutVF';
+        el.style.fontFeatureSettings = 'normal';
+        el.style.fontVariationSettings = 'normal';
+        el.style.color = '#fff';
+        el.style.fontWeight = 'bold';
+    });
+    // value는 normal weight
+    [fontSizeValue, letterSpacingValue, lineHeightValue].forEach(el => {
+        el.style.fontWeight = 'normal';
+    });
+}
+
+function switchFontTab(target) {
+    // 1. 이전 탭의 상태 저장
+    if (currentTab === 'spring' || currentTab === 'belut') {
+        tabContents[currentTab] = typeArea.value; 
+
+        fontStates[currentTab] = {
+            weight: parseInt(weightSlider.value), 
+            size: parseInt(fontSizeSlider.value),
+            spacing: parseInt(letterSpacingSlider.value),
+            leading: parseFloat(lineHeightSlider.value),
+            feature: currentTab === 'spring' ? (bodyBtn.classList.contains('active') ? "'ss01' 1" : "normal") : "normal"
+        };
+    }
+
+    // 2. 폰트 토글 UI 업데이트
+    currentTab = target;
+    fontToggle.checked = (target === 'belut'); // 토글 스위치 상태 동기화
+
+    if (target === 'belut') {
+        belutLabel.classList.add('active');
+        springLabel.classList.remove('active');
+    } else {
+        springLabel.classList.add('active');
+        belutLabel.classList.remove('active');
+    }
+
+    // 3. 새 탭의 상태 불러오기 및 적용
+    const state = fontStates[currentTab];
+    typeArea.value = tabContents[currentTab];
+    
+    if (target === 'belut') {
+      main.classList.add('belut-page');
+      
+      // 폰트 설정
+      typeArea.style.fontFamily = 'BelutVF';
+      glyphDisplay.style.fontFamily = 'BelutVF';
+      document.querySelectorAll('.glyph-box').forEach(box => box.style.fontFamily = 'BelutVF');
+      
+      // Belut은 Weight/Feature가 단순함.
+      typeArea.style.fontVariationSettings = 'normal';
+      glyphDisplay.style.fontVariationSettings = 'normal';
+      document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontVariationSettings='normal');
+      state.feature = 'normal'; 
+      typeArea.style.fontFeatureSettings = state.feature;
+      glyphDisplay.style.fontFeatureSettings = state.feature;
+      document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontFeatureSettings=state.feature);
+      
+      // 벨룻 라벨/값 스타일 적용
+      applyBelutStyle();
+      
+      // 컨트롤 값 동기화 (Weight는 null 전달)
+      syncControlValuesToDisplay(state.size, state.spacing, state.leading); 
+      
+    } else { // Spring 탭
+      main.classList.remove('belut-page');
+      
+      // 폰트 설정
+      typeArea.style.fontFamily = 'SpringVF';
+      glyphDisplay.style.fontFamily = 'SpringVF';
+      document.querySelectorAll('.glyph-box').forEach(box => box.style.fontFamily = 'SpringVF');
+      
+      // Feature 적용 및 버튼 상태 업데이트
+      typeArea.style.fontFeatureSettings = state.feature;
+      glyphDisplay.style.fontFeatureSettings = state.feature;
+      document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontFeatureSettings=state.feature);
+      
+      if (state.feature === "'ss01' 1") {
+          bodyBtn.classList.add('active');
+          titleBtn.classList.remove('active');
+      } else {
+          titleBtn.classList.add('active');
+          bodyBtn.classList.remove('active');
+      }
+      
+      // Spring 라벨/값 스타일 적용 (Weight 포함)
+      applySpringStyle(state.weight);
+      
+      // 컨트롤 값 동기화 
+      syncControlValuesToDisplay(state.size, state.spacing, state.leading, state.weight);
+    }
+}
+
+
+// 폰트 토글 스위치 이벤트 리스너 (체크박스)
+fontToggle.addEventListener('change', () => {
+    // 체크 상태면 'belut', 아니면 'spring'
+    const target = fontToggle.checked ? 'belut' : 'spring';
+    switchFontTab(target);
+});
+
+// 토글 라벨 클릭 이벤트 리스너 추가 
+springLabel.addEventListener('click', () => {
+    if (fontToggle.checked) { // 현재 벨룻 상태라면
+        fontToggle.checked = false;
+        fontToggle.dispatchEvent(new Event('change')); // change 이벤트 수동 발생
+    }
+});
+
+belutLabel.addEventListener('click', () => {
+    if (!fontToggle.checked) { // 현재 Spring 상태라면
+        fontToggle.checked = true;
+        fontToggle.dispatchEvent(new Event('change')); // change 이벤트 수동 발생
+    }
+});
+
+
+// 글립 생성
+const basicLatin = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`;
+for (const ch of basicLatin) {
+    const box = document.createElement('div');
+    box.className = 'glyph-box';
+    box.textContent = ch;
+    glyphGrid.appendChild(box);
+    box.addEventListener('click', () => {
+        glyphDisplay.textContent = ch; 
+        
+        document.querySelectorAll('.glyph-box').forEach(b => b.classList.remove('active'));
+        box.classList.add('active');
+    });
+}
+
+// 초기 로딩 시 switchFontTab('spring') 호출
+switchFontTab('spring');
+
+
+// 1. Weight 조절
+weightSlider.addEventListener('input',(e)=>{
+    const w = e.target.value;
+    typeArea.style.fontVariationSettings = `'wght' ${w}`;
+    glyphDisplay.style.fontVariationSettings = `'wght' ${w}`;
+    document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontVariationSettings=`'wght' ${w}`);
+    applySpringStyle(w); 
+    fontStates.spring.weight = parseInt(w);
+    updateSliderProgress(weightSlider); 
+});
+
+// 2. Font Size 조절
+fontSizeSlider.addEventListener('input', (e) => {
+    const size = e.target.value;
+    typeArea.style.fontSize = `${size}px`; 
+    fontSizeValue.textContent = `${size}px`;
+    fontStates[currentTab].size = parseInt(size);
+});
+
+// 3. Letter Spacing 조절
+letterSpacingSlider.addEventListener('input', (e) => {
+    const rawVal = parseInt(e.target.value);
+    const spacingEm = rawVal / 1000;
+    typeArea.style.letterSpacing = `${spacingEm}em`;
+    letterSpacingValue.textContent = rawVal;
+    fontStates[currentTab].spacing = rawVal;
+});
+
+// 4. Leading (Line Height) 조절
+lineHeightSlider.addEventListener('input', (e) => {
+    const height = parseFloat(e.target.value).toFixed(2);
+    typeArea.style.lineHeight = height;
+    lineHeightValue.textContent = height;
+    fontStates[currentTab].leading = parseFloat(height);
+});
+
+
+// 제목/본문 버튼 기능
+titleBtn.addEventListener('click',()=>{
+    titleBtn.classList.add('active');
+    bodyBtn.classList.remove('active');
+    const feature = 'normal';
+    typeArea.style.fontFeatureSettings = feature;
+    glyphDisplay.style.fontFeatureSettings = feature;
+    document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontFeatureSettings=feature);
+    fontStates.spring.feature = feature;
+    applySpringStyle(fontStates.spring.weight);
+});
+
+bodyBtn.addEventListener('click',()=>{
+    bodyBtn.classList.add('active');
+    titleBtn.classList.remove('active');
+    const feature = "'ss01' 1";
+    typeArea.style.fontFeatureSettings = feature;
+    glyphDisplay.style.fontFeatureSettings = feature;
+    document.querySelectorAll('.glyph-box').forEach(box=>box.style.fontFeatureSettings=feature);
+    fontStates.spring.feature = feature;
+    applySpringStyle(fontStates.spring.weight);
+});
+</script>
+</body>
+</html>
