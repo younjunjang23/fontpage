@@ -7,74 +7,6 @@
 /* -------------------------------------- */
 /* -------- 1. 기본 및 폰트 설정 -------- */
 /* -------------------------------------- */
-/* -------------------------------------- */
-/* -------- 1. 기본 및 폰트 설정 -------- */
-/* -------------------------------------- */
-/* ... (생략) ... */
-
-/* ---------- 메인 ---------- */
-.main {
-    flex: 1;
-    display: flex;
-    height: 100vh; 
-    overflow: hidden;
-}
-
-/* LEFT PANEL (텍스트 입력 영역) */
-.left-panel {
-    /* flex: 1; 이 설정이 남은 모든 공간을 차지하게 합니다. */
-    flex: 1; 
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    border-right: 1px solid #e6e6e6;
-    background: #fff;
-    transition: background 0.25s, color 0.25s;
-    min-height: 100%; 
-    box-sizing: border-box; 
-}
-
-/* -------------------------------------- */
-/* -------- 4. 텍스트 영역 및 프리뷰 스타일 -------- */
-/* -------------------------------------- */
-
-/* 텍스트 영역: 줄바꿈이 되도록 그대로 둡니다. */
-textarea {
-    flex: 1; 
-    height: auto; 
-    min-height: 100px;
-    resize: none;
-    font-size: 30px; 
-    line-height: 1.5;
-    letter-spacing: 0em;
-    font-family: 'SpringVF';
-    border: none;
-    outline: none;
-    color: #000;
-    background: #fff;
-    padding: 18px;
-    border-radius: 12px;
-    overflow: auto; 
-    /* 🌟 추가: 텍스트가 줄바꿈되도록 너비 제약을 명시합니다. */
-    width: 100%; 
-    box-sizing: border-box; 
-}
-
-
-/* RIGHT PANEL (폰트 프리뷰 고정 영역) */
-.right-panel {
-    /* 🌟 수정: 너비를 510px로 고정합니다. */
-    width: 510px; 
-    /* 🌟 수정: flex-shrink, flex-grow를 모두 0으로 설정하여 절대 움직이지 않게 고정합니다. */
-    flex: 0 0 510px; 
-    display: flex;
-    flex-direction: column;
-    border-left: 1px solid #e6e6e6;
-    overflow: hidden;
-    height: 100%; 
-}
-
-/* ... (나머지 CSS는 그대로 유지) ... */
 
 body {
     margin: 0;
@@ -86,12 +18,12 @@ body {
 
 @font-face {
     font-family: 'SpringVF';
-    /* 🚨 폰트 경로 수정: 로컬 경로 -> 상대 경로 ('fonts' 폴더 사용) */
+    /* 🚨 폰트 경로: fonts 폴더에 폰트 파일이 있어야 합니다. */
     src: url('fonts/newserif_normal-VF.ttf') format('truetype');
 }
 @font-face {
     font-family: 'BelutVF';
-    /* 🚨 폰트 경로 수정: 로컬 경로 -> 상대 경로 ('fonts' 폴더 사용) */
+    /* 🚨 폰트 경로: fonts 폴더에 폰트 파일이 있어야 합니다. */
     src: url('fonts/5amBellutTTF.ttf') format('truetype');
 }
 
@@ -104,6 +36,7 @@ body {
 }
 
 .left-panel {
+    /* 남은 모든 공간 차지 */
     flex: 1; 
     display: flex;
     flex-direction: column;
@@ -232,7 +165,7 @@ input[type="range"]::-moz-range-thumb {
     margin-top: 20px; 
     margin-bottom: 20px;
     display: flex;
-    justify-content: flex-start; /* 왼쪽 정렬 */
+    justify-content: flex-start;
     align-items: center;
     padding-left: 18px; 
     padding-right: 18px;
@@ -325,9 +258,13 @@ textarea {
     padding: 18px;
     border-radius: 12px;
     overflow: auto; 
+    width: 100%; 
+    box-sizing: border-box; 
 }
 
+/* RIGHT PANEL (폰트 프리뷰 고정 영역) */
 .right-panel {
+    /* 너비 고정 */
     width: 510px; 
     flex: 0 0 510px; 
     display: flex;
@@ -462,7 +399,7 @@ textarea {
                 <div class="control-info">
                     <div class="control-label" id="weightLabel">Weight</div> 
                 </div>
-                <input type="range" id="weightSlider" min="100" max="900" value="400" />
+                <input type="range" id="weightSlider" min="100" max="1000" value="400" />
             </div>
             
             <div class="text-controls">
@@ -498,7 +435,7 @@ textarea {
             </div>
         </div>
         
-        <textarea id="typeArea">Spring Variable</textarea>
+        <textarea id="typeArea">Spring Variable Font</textarea>
 
         <div class="font-toggle-wrapper">
             <div class="toggle-container">
@@ -528,7 +465,8 @@ let currentTab = 'spring';
 
 let fontStates = {
     spring: {
-        weight: 400,
+        // 🌟 수정 사항: 최대 weight를 1000까지 반영하기 위해 상태 저장 시에도 대비
+        weight: 400, 
         size: 100,
         spacing: 0,
         leading: 1.50,
@@ -570,7 +508,7 @@ const lineHeightLabel = document.getElementById('lineHeightLabel');
 // 토글 스위치 요소
 const fontToggle = document.getElementById('fontToggle');
 const springLabel = document.getElementById('springLabel');
-const belutLabel = document = document.getElementById('belutLabel');
+const belutLabel = document.getElementById('belutLabel');
 
 
 function updateSliderProgress(slider) {
